@@ -6,11 +6,12 @@
 #define TAILLE 12
 
 
+/*
 
 typedef struct Element{
     int x;
     int y;
-    struct Element *suivant;
+    Element *suivant;
 } Element;
 
 struct Liste{
@@ -19,13 +20,35 @@ struct Liste{
 
 typedef struct Liste Liste;
 
+Element* creerElt(int x, int y)
+{
+    Element *p = (Element*)malloc(sizeof(Element));
+    p->x = x;
+    p->y = y;
+    p->suivant = NULL;
+    return p;
+}
+
+int estVideListe(Liste l)
+{
+    return (l.debut == NULL);
+}
+
+Element* defiler(Liste *file)
+{
+    Element *retour = NULL;
+    if(file->debut)
+    {
+        retour = file->debut;
+        file->debut = file->debut->suivant;
+    }
+    return retour;
+}
+*/
+
 void initialiser(int tab[TAILLE][TAILLE]);
 void affichage(int tab[TAILLE][TAILLE]);
-//Version recursive:
 void remplir(int tab[TAILLE][TAILLE], int couleur_avant, int couleur_apres, int i, int j);
-
-//Version non recursive:
-void remplir_Non_Rec(int tab[TAILLE][TAILLE], int couleur_avant, int couleur_apres);
-
+int gagne(int grille[TAILLE][TAILLE]);
 
 #endif

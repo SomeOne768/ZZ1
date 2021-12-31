@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "tableau.h"
+#include <SDL2/SDL.h>
 
 
 int jeu[TAILLE][TAILLE];
@@ -31,12 +32,7 @@ int main()
         if(couleur>=0 && couleur<COULEUR && (couleur!=jeu[0][0]))
         {
             //On effectue la propagation à partir de la case 0
-            
-            //Version recursive
             remplir(jeu, jeu[0][0], couleur, 0, 0);
-
-            //Version non recursive
-            //remplir_Non_Rec(jeu, jeu[0][0], couleur);
         }else{
             if(couleur == 999)
                 break;

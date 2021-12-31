@@ -7,7 +7,7 @@
 
 void initialiser(int tab[TAILLE][TAILLE])
 {
-    /* initialisation du tableau avec des couleurs aléatoires */
+    /* initialisation du tableau avec des couleurs aléatoire */
     srand(time(NULL));
     int r;
     for(int i = 0; i<TAILLE; i++)
@@ -55,12 +55,53 @@ int fin(int tab[TAILLE][TAILLE])
 }
 
 
-
+/*
+void remplir(int tab[TAILLE][TAILLE], int couleur_avant, int couleur_apres, unsigned int i, unsigned int j)
+{*/
+    /* 
+     *  Fonction qui permet la propagation de la nouvelle couleur.
+     *  On part de la case 0, si une case adjacente est de même couleur que la case 0 on propage le changement de couleur.
+     *  On propage tant que la couleur est identique et que les cases sont adjacentes
+     *  Afin d'éviter des nouvelles recherche on peut utiliser une liste nous permettant de garder les cases deja adjacente
+     *  et ajouter seulement les nouvelles à chaque fois puis changer les couleurs des coordonnées appartenant à notre liste.
+    */
+/*
+   Liste adjacent;
+   adjacent.debut = creerElt(0, 0);
+   Liste file;
+   file.debut = creerElt(0, 0);
+   while(!estVideListe(file))
+   {
+       //On recupere les cases adjacente ayant la bonne couleur des elements de notre file
+       int x,y;
+       x = file.debut->x;
+       y = file.debut->y;
+       if(tab[x][y+1] == couleur_avant)
+       {
+           //On commence par regarder celui qui est à droite
+           
+       }
+   }
+}*/
 
 
 //Méthode recursive:
 
 void remplir(int tab[TAILLE][TAILLE], int couleur_avant, int couleur_apres, int i, int j)
+{
+    //Fonction a appelé avec les coordonnées 0,0 pour faire la propagation de manière correcte.
+    //Vérification des coordonnées:
+    if( !(i<0 || i>=TAILLE || j<0 || j>=TAILLE) && tab[i][j] == couleur_avant)
+    {
+        tab[i][j] = couleur_apres;
+        remplir(tab, couleur_avant, couleur_apres, i+1, j);
+        remplir(tab, couleur_avant, couleur_apres, i, j+1);
+        remplir(tab, couleur_avant, couleur_apres, i-1, j);
+        remplir(tab, couleur_avant, couleur_apres, i, j-1);
+    }
+}
+
+void remplir2(int tab[TAILLE][TAILLE], int couleur_avant, int couleur_apres, int i, int j)
 {
     //Fonction a appelé avec les coordonnées 0,0 pour faire la propagation de manière correcte.
     //Vérification des coordonnées:
@@ -115,105 +156,17 @@ void remplir(int tab[TAILLE][TAILLE], int couleur_avant, int couleur_apres, int 
 }
 
 
-
-
-
-//Fonction utilitaire pour la version non recursive
-Element* creerElt(int x, int y)
+int gagne(int grille[TAILLE][TAILLE])
 {
-    Element *p = (Element*)malloc(sizeof(Element));
-    p->x = x;
-    p->y = y;
-    p->suivant = NULL;
-    return p;
-}
-
-int estVideListe(Liste l)
-{
-    return (l.debut == NULL);
-}
-
-Element* depiler(Liste *pile)
-{
-    //Enleve le dernier element ajouté/tête de liste et le retourne
-    Element *retour = NULL;
-    if(pile->debut)
+    int i,j,couleur = grille[0][0];
+    for(i=0; i<TAILLE; i++)
     {
-        retour = pile->debut;
-        pile->debut = pile->debut->suivant;
+        for(j=0; j<TAILLE; j++)
+        {
+            if(couleur != grille[i][j])
+                return 0;
+        }
     }
-    return retour;
-}
 
-void ajoutTete(Liste *L, Element *e)
-{
-    //ajout en tete de liste
-    e->suivant = L->debut;
-    L->debut = e;
-}
-
-
-//Version non recursive
-void remplir_Non_Rec(int tab[TAILLE][TAILLE], int couleur_avant, int couleur_apres)
-{
-    /* 
-     *  Fonction qui permet la propagation de la nouvelle couleur.
-     *  On part de la case 0, si une case adjacente est de même couleur que la case 0 on propage le changement de couleur.
-     *  On propage tant que la couleur est identique et que les cases sont adjacentes
-     *  Afin d'éviter des nouvelles recherche on peut utiliser une liste nous permettant de garder les cases deja adjacente
-     *  et ajouter seulement les nouvelles à chaque fois puis changer les couleurs des coordonnées appartenant à notre liste.
-    */
-
-   Liste pile;
-   pile.debut = creerElt(0, 0);
-   tab[0][0] = couleur_apres;
-
-   while(!estVideListe(pile))
-   {
-        //On recupere les coordonnees de notre tete de liste et on lui change sa couleur
-        int x,y;
-        x = pile.debut->x;
-        y = pile.debut->y;
-        
-
-        //On n'oublie pas de le retirer de la liste + de liberer la case mémoire
-        Element *e = depiler(&pile);
-        free(e);
-
-        //On recupere les cases adjacente ayant la bonne couleur
-        if( (y+1)<TAILLE && tab[x][y+1] == couleur_avant)
-        {
-            //On commence par regarder celui qui est à droite
-            Element *droite = creerElt(x, y+1);
-            ajoutTete(&pile, droite);
-            //On effectue le changement ici pour ne pas creer de doublons dans la liste
-            tab[x][y+1] = couleur_apres;
-        }
-
-        if( (y-1)>=0 && tab[x][y-1] == couleur_avant)
-        {
-            //A gauche
-            Element *gauche = creerElt(x, y-1);
-            ajoutTete(&pile, gauche);
-            tab[x][y+1] = couleur_apres;
-        }
-
-        if( (x-1)>=0 && tab[x-1][y] == couleur_avant)
-        {
-            //En haut
-            Element *haut = creerElt(x-1, y);
-            ajoutTete(&pile, haut);
-            tab[x-1][y] = couleur_apres;
-        }
-
-        if( (x+1)<TAILLE && tab[x+1][y] == couleur_avant)
-        {
-            //En bas
-            Element *bas = creerElt(x+1, y);
-            ajoutTete(&pile, bas);
-            tab[x+1][y] = couleur_apres;
-        }
-   }
-
-   //A la sortie, la liste est vide, pas besoin de free
+    return 1;
 }
